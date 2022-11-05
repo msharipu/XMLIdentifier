@@ -11,7 +11,7 @@ namespace XMLIdentifier
         static void Main(string[] args)
         {
             Program p = new Program();
-            string test1 = "<Design><Code>hello world</Design></Code>";
+            string test1 = "<Design><Code>hello world</Code></Design>";
 
 
             p.DetermineSxml(test1);
@@ -34,12 +34,14 @@ namespace XMLIdentifier
 
                 if(sxml[i] == '<')
                 {
-                    opIndex = i + 1;
-
-                    if ((sxml[i] + 1) != '/') // this is an opening element
+                    if ((sxml[i + 1] ) != '/') // this is an opening element
                     {
+                        opIndex = i + 1;
+                        int length = 0;
+
                         for (int j = i+1; j < sxml.Length; j++)
                         {
+                            length++;
                             if (sxml[j] != '>')
                                 continue;
                             else if(sxml[j] == '<') // if found another opening bracket, then this is an invalid
@@ -49,7 +51,8 @@ namespace XMLIdentifier
                             }
                             else // found '>', get the index
                             {
-                                edIndex = j -1 ;
+                                //edIndex = j -1 ;
+                                edIndex = length -1 ;
                                 break;
                             }
                         }
@@ -63,7 +66,7 @@ namespace XMLIdentifier
                     }
                 }
 
-                break;
+                
                 
             }
 
