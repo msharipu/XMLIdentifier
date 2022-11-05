@@ -27,6 +27,11 @@ namespace XMLIdentifier
             string test12 = "<Design><Code attr=\"123\">hello world</Code><XCode>hello world</XCode><YCode attr=\"123\">hello world</YCode></Design>";
             string test13 = "<Design><Code><People>Hello World</code></Design>";
             string test14 = "<Design><Code>hello world</Code><Code>hello world</Code><Code attr=\"xxx\">hello world</Code><Test><SubTest attr=\"1\">1</SubTest><SubTest>2</SubTest><SubTest>3</SubTest><SubTest>4</SubTest></Test></Design>";
+            string test15 = "<Design><Test><SubTest>1</SubTest><SubTest>2</SubTest><SubTest>3</SubTest><SubTest>4</SubTest></Test><Code>hello world</Code><Code>hello world</Code><Code>hello world</Code></Design>";
+            string test16 = "<Design><Test /></Design>";
+            string test17 = "<Design><Test /><Test1></Test1></Design>";
+            string test18 = "<Design>123<Test /><Test1></Test1></Design>";
+            string test19 = "<Design>123<Test /><Test1></Test1><Test2/></Design>";
 
 
             //Console.WriteLine(p.DetermineSxml(test1)); //output True
@@ -42,7 +47,12 @@ namespace XMLIdentifier
             //Console.WriteLine(p.DetermineSxml(test11)); //output True
             //Console.WriteLine(p.DetermineSxml(test12)); //output True
             //Console.WriteLine(p.DetermineSxml(test13)); //output False
-            Console.WriteLine(p.DetermineSxml(test14)); //output True
+            //Console.WriteLine(p.DetermineSxml(test14)); //output True
+            //Console.WriteLine(p.DetermineSxml(test15)); //output True
+            //Console.WriteLine(p.DetermineSxml(test16)); //output True
+            //Console.WriteLine(p.DetermineSxml(test17)); //output True
+            //Console.WriteLine(p.DetermineSxml(test18)); //output True
+            Console.WriteLine(p.DetermineSxml(test19)); //output True
             Console.ReadKey();
         }
 
@@ -112,50 +122,64 @@ namespace XMLIdentifier
         //    return true;
         //}
         #endregion
+        //bool DetermineSxml(string sxml)
+        //{
+        //    try
+        //    {
+        //        //Console.WriteLine("START");
+        //        //Console.WriteLine(sxml);
+
+        //        string rootElementName = "";
+        //        List<string> startElement = new List<string>();
+        //        List<string> endElement = new List<string>();
+                
+        //        for (int i = 0; i < sxml.Length; i++)
+        //        {
+
+        //            int opIndex = 0;
+        //            int edIndex = 0;
+
+        //            if (sxml[i] == '<')
+        //            {
+        //                if ((sxml[i + 1]) != '/') // this is an opening element
+        //                {
+        //                    opIndex = i + 1;
+        //                    edIndex = getLength(opIndex, sxml);
+
+        //                    if (edIndex == 0) // does not found any closing bracket, invalid
+        //                        throw new Exception("Invalid xml string, no closing tag found!");
+        //                    //invalidXmlDetected = true;
+        //                    else if (rootElementName == "") // this is the first element
+        //                    {
+        //                        rootElementName = sxml.Substring(opIndex, edIndex);
+        //                        string bodyXml = sxml.Substring(edIndex + 2, FindEndRootElement(rootElementName, sxml,true));
+        //                        //recursiveElementValidation(bodyXml);
+        //                        recursiveElementValidation2(bodyXml);
+        //                        //Console.WriteLine(bodyXml);
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //            break;
+        //        }
+
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        return false;
+        //    }
+        //}
+
         bool DetermineSxml(string sxml)
         {
             try
             {
                 //Console.WriteLine("START");
-
                 //Console.WriteLine(sxml);
 
-                string rootElementName = "";
-                List<string> startElement = new List<string>();
-                List<string> endElement = new List<string>();
-                //bool invalidXmlDetected = false;
-
-                for (int i = 0; i < sxml.Length; i++)
-                {
-                    //if (invalidXmlDetected)
-                    //    break;
-
-                    int opIndex = 0;
-                    int edIndex = 0;
-
-                    if (sxml[i] == '<')
-                    {
-                        if ((sxml[i + 1]) != '/') // this is an opening element
-                        {
-                            opIndex = i + 1;
-                            edIndex = getLength(opIndex, sxml);
-
-                            if (edIndex == 0) // does not found any closing bracket, invalid
-                                throw new Exception("Invalid xml string, no closing tag found!");
-                            //invalidXmlDetected = true;
-                            else if (rootElementName == "") // this is the first element
-                            {
-                                rootElementName = sxml.Substring(opIndex, edIndex);
-                                string bodyXml = sxml.Substring(edIndex + 2, FindEndRootElement(rootElementName, sxml,true));
-                                //recursiveElementValidation(bodyXml);
-                                recursiveElementValidation2(bodyXml);
-                                //Console.WriteLine(bodyXml);
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
+                recursiveElementValidation2(sxml);
 
                 return true;
             }
@@ -164,16 +188,12 @@ namespace XMLIdentifier
                 Console.WriteLine(ex.Message);
                 return false;
             }
-            //finally
-            //{
-            //    Console.WriteLine("END\n");
-            //}
-
-            
         }
 
         private void recursiveElementValidation2(string bodyXml)
         {
+            Console.WriteLine(bodyXml);
+
             if (bodyXml.Contains("<") && !bodyXml.Contains(">"))
                 throw new Exception("There is no closing element");
             else if (bodyXml.StartsWith("<") && !bodyXml.Substring(1).Equals("//"))
@@ -184,14 +204,15 @@ namespace XMLIdentifier
                 if (elName.Contains(" "))
                 {
                     attributes.AddRange(elName.Split(' '));
-                    if (attributes.Count == 1)
-                        throw new Exception("Invalid Xml input string, Element name cannot have spaces!");
+                    //if (attributes.Count == 1)
+                    //    throw new Exception("Invalid Xml input string, Element name cannot have spaces!");
                     elName = attributes[0];
                     elHasAttribute = true;
                 }
 
                 string closingElName = $"</{elName}>";
-                
+                string closingSelfElName = elName.EndsWith("/") ? $"<{elName}>" : $"<{elName}/>";
+
                 if (bodyXml.Contains(closingElName)) //element name are case sensitive
                 {
                     int attributeLength = 0;
@@ -205,7 +226,8 @@ namespace XMLIdentifier
                     int lastElementIndex = FindEndRootElement(elName, bodyXml);
                     int startIndex = findElementClosingTag(bodyXml);
                     string body = bodyXml.Substring(startIndex + 1, lastElementIndex - attributeLength); //body might be Element value, or nested elements
-                    recursiveElementValidation2(body); //if element value contains nested element, recursive will keep going until it does not find an element
+                    if(body.Length > 0)
+                        recursiveElementValidation2(body); //if element value contains nested element, recursive will keep going until it does not find an element
 
                     if (lastElementIndex < bodyXml.Length) // if value less, means there is still more content to parse 
                     {
@@ -215,6 +237,14 @@ namespace XMLIdentifier
                             recursiveElementValidation2(output);
                     }
 
+                }
+                else if (String.Concat(bodyXml.Where(c => !Char.IsWhiteSpace(c))).Contains(closingSelfElName)) //cater the scenario where an element self close
+                {
+                    int lastElementIndex = findElementClosingTag(bodyXml) + 1;
+                    int lengthToRemove = (lastElementIndex);
+                    string output = bodyXml.Remove(0, lengthToRemove);
+                    if (output.Length > 0)
+                        recursiveElementValidation2(output);
                 }
                 else
                     throw new Exception($"Invalid xml! No closing tag found for {elName}");
@@ -228,13 +258,14 @@ namespace XMLIdentifier
                 if (elName.Contains(" "))
                 {
                     attributes.AddRange(elName.Split(' '));
-                    if (attributes.Count == 1)
-                        throw new Exception("Invalid Xml input string, Element name cannot have spaces!");
+                    //if (attributes.Count == 1)
+                    //    throw new Exception("Invalid Xml input string, Element name cannot have spaces!");
                     elName = attributes[0];
                     elHasAttribute = true;
                 }
 
                 string closingElName = $"</{elName}>";
+                string closingSelfElName = elName.EndsWith("/") ? $"<{elName}>" : $"<{elName}/>";
 
                 if (bodyXml.Contains(closingElName))
                 {
@@ -249,7 +280,8 @@ namespace XMLIdentifier
                     int lastElementIndex = FindEndRootElement(elName, bodyXml) - (startIndexElement - 1);
                     int startIndex = findElementClosingTag(bodyXml);
                     string body = bodyXml.Substring(startIndex + 1, lastElementIndex - attributeLength); //body might be Element value, or nested elements
-                    recursiveElementValidation2(body); //if element value contains nested element, recursive will keep going until it does not find an element
+                    if (body.Length > 0)
+                        recursiveElementValidation2(body); //if element value contains nested element, recursive will keep going until it does not find an element
 
                     if (lastElementIndex < bodyXml.Length) // if value less, means there is still more content to parse 
                     {
@@ -259,6 +291,14 @@ namespace XMLIdentifier
                             recursiveElementValidation2(output);
                     }
 
+                }
+                else if (bodyXml.Contains(closingSelfElName) || String.Concat(bodyXml.Where(c => !Char.IsWhiteSpace(c))).Contains(closingSelfElName)) //cater the scenario where an element self close
+                {
+                    int lastElementIndex = findElementClosingTag(bodyXml) + 1;
+                    int lengthToRemove = (lastElementIndex);
+                    string output = bodyXml.Remove(0, lengthToRemove);
+                    if (output.Length > 0)
+                        recursiveElementValidation2(output);
                 }
                 else
                     throw new Exception($"Invalid xml! No closing tag found for {elName}");
