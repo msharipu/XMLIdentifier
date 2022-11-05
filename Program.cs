@@ -35,28 +35,36 @@ namespace XMLIdentifier
             string test18 = "<Design>123<Test /><Test1></Test1></Design>";
             string test19 = "<Design>123<Test /><Test1></Test1><Test2/></Design>";
             string test20 = "<Design><Test /><Test1><</Test1></Design>";
+            string test21 = "<Design></Test><Test1></Design>";
+            string test22 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"><html><body><h2>My CD Collection</h2><table border=\"1\"><tr><th style=\"text-align:left\">Title</th><th style=\"text-align:left\">Artist</th></tr><xsl:for-each select=\"catalog/cd\"><tr><td><xsl:value-of select=\"title\"/></td><td><xsl:value-of select=\"artist\"/></td></tr></xsl:for-each></table></body></html></xsl:template></xsl:stylesheet>";
+            string test23 = "<?xml version=\"1.0\"?><xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><xs:element name=\"Book\"><xs:complexType><xs:sequence><xs:element name=\"Title\" type=\"xs:string\"/><xs:element name=\"Author\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"2\"/><xs:element name=\"Publication_Year\" type=\"xs:positiveInteger\"/><xs:element name=\"Category\" type=\"xs:string\"/><xs:element name=\"Language\" type=\"xs:string\" default=\"English\"/><xs:element name=\"Pages\" type=\"xs:postiveInteger\"/><xs:element name=\"Number_of_Chapters\" type=\"xs: postiveInteger \"/><xs:element name=\"Chap_1\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_2\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_3\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><!-- Similarly the number of chapters can be represented separately--><xs:element name=\"Reference\" type=\"xs:string\"/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+            string test24 = "<?xml version=\"1.0\"?><xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><xs:element name=\"Book\"><xs:complexType><xs:sequence><xs:element name=\"Title\" type=\"xs:string\"/><xs:element name=\"Author\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"2\"/><xs:element name=\"Publication_Year\" type=\"xs:positiveInteger\"/><xs:element name=\"Category\" type=\"xs:string\"/><xs:element name=\"Language\" type=\"xs:string\" default=\"English\"/><xs:element name=\"Pages\" type=\"xs:postiveInteger\"/><xs:element name=\"Number_of_Chapters\" type=\"xs: postiveInteger \"/><xs:element name=\"Chap_1\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_2\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_3\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><!-- Similarly the number of chapters can be represented separately--><xs:element name=\"Reference\" type=\"xs:string\"/><xs:element name=\"Reference\" type=\"xs:string\"/><xs:element name=\"Reference\" type=\"xs:string\"/><xs:element name=\"Reference\" type=\"xs:string\"/></xs:sequence></xs:complexType></xs:element></xs:schema>";
 
-            
-            Console.WriteLine("Output: " + p.DetermineSxml(test1) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test2) + "\n"); //output False, invalid root
-            Console.WriteLine("Output: " + p.DetermineSxml(test3) + "\n"); //output False, invalid root
-            Console.WriteLine("Output: " + p.DetermineSxml(test4) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test5) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test6) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test7) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test8) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test9) + "\n"); //output False, no closing element Code
-            Console.WriteLine("Output: " + p.DetermineSxml(test10) + "\n"); //output False, no closing element Code
-            Console.WriteLine("Output: " + p.DetermineSxml(test11) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test12) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test13) + "\n"); //output False, case sensitive element name failed
-            Console.WriteLine("Output: " + p.DetermineSxml(test14) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test15) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test16) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test17) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test18) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test19) + "\n"); //output True
-            Console.WriteLine("Output: " + p.DetermineSxml(test20) + "\n"); //output False, invalid element value with < character
+
+            //Console.WriteLine("Output: " + p.DetermineSxml(test1) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test2) + "\n"); //output False, invalid root
+            //Console.WriteLine("Output: " + p.DetermineSxml(test3) + "\n"); //output False, invalid root
+            //Console.WriteLine("Output: " + p.DetermineSxml(test4) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test5) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test6) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test7) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test8) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test9) + "\n"); //output False, no closing element Code
+            //Console.WriteLine("Output: " + p.DetermineSxml(test10) + "\n"); //output False, no closing element Code
+            //Console.WriteLine("Output: " + p.DetermineSxml(test11) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test12) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test13) + "\n"); //output False, case sensitive element name failed
+            //Console.WriteLine("Output: " + p.DetermineSxml(test14) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test15) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test16) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test17) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test18) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test19) + "\n"); //output True
+            //Console.WriteLine("Output: " + p.DetermineSxml(test20) + "\n"); //output False, invalid element value with < character
+            //Console.WriteLine("Output: " + p.DetermineSxml(test21) + "\n"); //output False, invalid closing element upfront
+            //Console.WriteLine("Output: " + p.DetermineSxml(test22) + "\n"); //output True, 
+            //Console.WriteLine("Output: " + p.DetermineSxml(test23) + "\n"); //output True, 
+            Console.WriteLine("Output: " + p.DetermineSxml(test24) + "\n"); //output True, 
             Console.ReadKey();
         }
 
@@ -64,10 +72,13 @@ namespace XMLIdentifier
         {
             try
             {
+
+
                 Console.WriteLine(TestCount++.ToString() + ")");
                 Console.WriteLine("Input: " + sxml);
-                //Console.WriteLine(sxml);
 
+                if(sxml.StartsWith("<?"))
+                    sxml = sxml.Remove(0, sxml.IndexOf(">") + 1);
                 //recursiveElementValidation2(sxml);
                 recursiveElementValidation2(sxml,true);
 
@@ -75,7 +86,7 @@ namespace XMLIdentifier
             }
             catch (Exception ex)
             {
-                //Console.Write(ex.Message + "\t");
+                Console.Write(ex.Message + "\t");
                 return false;
             }
         }
@@ -144,10 +155,23 @@ namespace XMLIdentifier
             #endregion
             else if (bodyXml.Contains("<")) //possibly the body still has element but the start is the element value instead like test 8
             {
+                if (bodyXml.StartsWith("<!--")) // if comment, find the closing and continue with next element available
+                {
+                    string closingComment = "-->";
+                    string output = bodyXml.Remove(0, bodyXml.IndexOf(closingComment) + closingComment.Length );
+                    if (output.Length > 0)
+                        recursiveElementValidation2(output);
+
+                    return;
+                }
+
                 bool elHasAttribute = false;
                 List<string> attributes = new List<string>();
                 int startIndexElement = bodyXml.IndexOf('<') + 1;
                 string elName = bodyXml.Substring(startIndexElement, getLength(startIndexElement, bodyXml));
+                if (elName.StartsWith("/"))
+                    throw new Exception("Invalid xml string! Opening element not found!");
+
                 if (elName.Contains(" "))
                 {
                     attributes.AddRange(elName.Split(' '));
@@ -158,7 +182,14 @@ namespace XMLIdentifier
                 }
 
                 string closingElName = $"</{elName}>";
-                string closingSelfElName = elName.EndsWith("/") ? $"<{elName}>" : $"<{elName}/>";
+                // update cater scenario where element self close and has attributes
+                string closingSelfElName = "";
+                if (elHasAttribute && attributes.LastOrDefault().EndsWith("/"))
+                {
+                    closingSelfElName = String.Concat("<",String.Join(" ",attributes.ToArray()), ">");
+                }
+                else
+                    closingSelfElName = elName.EndsWith("/") ? $"<{elName}>" : $"<{elName}/>";
 
                 if (bodyXml.Contains(closingElName))
                 {
@@ -166,7 +197,7 @@ namespace XMLIdentifier
                     if (elHasAttribute)
                     {
                         for (int i = 1; i < attributes.Count; i++)
-                            attributeLength = attributes[i].Length + 1; //+1 to include space 
+                            attributeLength += attributes[i].Length + 1; //+1 to include space 
                         //Console.Write("element has attribute\t");
                     }
 
@@ -185,7 +216,9 @@ namespace XMLIdentifier
                     }
 
                 }
-                else if (bodyXml.Contains(closingSelfElName) || String.Concat(bodyXml.Where(c => !Char.IsWhiteSpace(c))).Contains(closingSelfElName)) //cater the scenario where an element self close
+                //cater the scenario where an element self close
+                
+                else if (bodyXml.Contains(closingSelfElName) || String.Concat(bodyXml.Where(c => !Char.IsWhiteSpace(c))).Contains(closingSelfElName)) 
                 {
                     //Console.Write("Found closing self element name \t");
                     int lastElementIndex = findElementClosingTag(bodyXml) + 1;
