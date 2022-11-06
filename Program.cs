@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,9 +44,13 @@ namespace XMLIdentifier
             string test26 = "<Design><Code attr=\"123\" attr>hello world</Code><XCode attr=>hello world</XCode><YCode attr=\"123\" _123=\"\">hello world</YCode></Design>";
             string test27 = "<Design><XCode attr=>hello world</XCode><YCode attr=\"123\" _123=\"\">hello world</YCode></Design>";
             string test28 = "<Design><YCode attr=\"123\" _123=\"\">hello world</YCode></Design>";
-            string test29 = "<Design><Code  >hello world</Code></Design>";
-
-
+            string test29 = "<Design><Code  >&</Code></Design>";
+            string test30 = "<Design><Code  >&lt; &gt;</Code></Design>";
+            string test31 = "<Design><Code  >;&</Code></Design>";
+            string test32 = "<Design><Code  >&gt &</Code></Design>";
+            string test33 = "<Design><Code  >& &gt</Code></Design>";
+            string test34 = "<Design><!-- This is an invalid -- comment --><Code  >& &gt</Code></Design>";
+            string test35 = "<Design><!-- This is an invalid--comment --><Code  >& &gt</Code></Design>";
 
             //Console.WriteLine("Output: " + p.DetermineSxml(test1) + "\n"); //output True
             //Console.WriteLine("Output: " + p.DetermineSxml(test2) + "\n"); //output False, invalid root
@@ -72,10 +77,16 @@ namespace XMLIdentifier
             //Console.WriteLine("Output: " + p.DetermineSxml(test23) + "\n"); //output True, 
             //Console.WriteLine("Output: " + p.DetermineSxml(test24) + "\n"); //output True, 
             //Console.WriteLine("Output: " + p.DetermineSxml(test25) + "\n"); //output False, more than 1 root tags 
-            Console.WriteLine("Output: " + p.DetermineSxml(test26) + "\n"); //output False, more than 1 root tags 
-            Console.WriteLine("Output: " + p.DetermineSxml(test27) + "\n"); //output False, more than 1 root tags 
-            Console.WriteLine("Output: " + p.DetermineSxml(test28) + "\n"); //output False, more than 1 root tags 
-            Console.WriteLine("Output: " + p.DetermineSxml(test29) + "\n"); //output False, more than 1 root tags 
+            //Console.WriteLine("Output: " + p.DetermineSxml(test26) + "\n"); //output False, more than 1 root tags 
+            //Console.WriteLine("Output: " + p.DetermineSxml(test27) + "\n"); //output False, more than 1 root tags 
+            //Console.WriteLine("Output: " + p.DetermineSxml(test28) + "\n"); //output True, 
+            //Console.WriteLine("Output: " + p.DetermineSxml(test29) + "\n"); //output False, Invalid character detected
+            //Console.WriteLine("Output: " + p.DetermineSxml(test30) + "\n"); //output True,
+            //Console.WriteLine("Output: " + p.DetermineSxml(test31) + "\n"); //output False, Invalid character detected
+            //Console.WriteLine("Output: " + p.DetermineSxml(test32) + "\n"); //output False, Invalid character detected
+            //Console.WriteLine("Output: " + p.DetermineSxml(test33) + "\n"); //output False, Invalid character detected
+            Console.WriteLine("Output: " + p.DetermineSxml(test34) + "\n"); //output False, Invalid character detected
+            Console.WriteLine("Output: " + p.DetermineSxml(test35) + "\n"); //output False, Invalid character detected
             Console.ReadKey();
         }
 
@@ -167,6 +178,9 @@ namespace XMLIdentifier
                 if (bodyXml.StartsWith("<!--")) // if comment, find the closing and continue with next element available
                 {
                     string closingComment = "-->";
+                    if (bodyXml.Substring(0, bodyXml.IndexOf(closingComment)).Contains("--"))
+                        throw new Exception("Invalid comment detected");
+
                     string output = bodyXml.Remove(0, bodyXml.IndexOf(closingComment) + closingComment.Length);
                     if (output.Length > 0)
                         recursiveElementValidation2(output);
@@ -242,6 +256,47 @@ namespace XMLIdentifier
 
                 //Console.WriteLine("yahoo\t" + bodyXml);
             }
+            //else if (validateElementBodyValue(bodyXml))
+            else if (validateElementBodyValue(bodyXml))
+                throw new Exception("Invalid character detected");
+        }
+
+        private bool validateElementBodyValue(string bodyXml)
+        {
+            bool invalidFound = false;
+            if (bodyXml.Contains("&"))
+            {
+                int length1 = 4;
+                int length2 = 5;
+
+                for (int i = bodyXml.IndexOf('&'); i < bodyXml.Length; i++) //index of first '&'
+                {
+                    if (i + 1 == bodyXml.Length)
+                    {
+                        invalidFound = true;
+                        break;
+                    }
+                    else if (bodyXml.Substring(i, length1) == "&lt;" || bodyXml.Substring(i, length1) == "&gt;")
+                    {
+                        i = i + length1;
+                        continue;
+                    }
+                    else if (bodyXml.Substring(i, 5) == "&amp;" || bodyXml.Substring(i, 5) == "&apos;" ||
+                        bodyXml.Substring(i, 5) == "&quot;")
+                    {
+                        i = i + length2;
+                        continue;
+                    }
+                    else
+                    {
+                        invalidFound = true;
+                        break;
+                    }
+                        //throw new Exception("Invalid character detected");
+                }
+            }
+
+            return invalidFound;
         }
 
         /// <summary>
@@ -262,21 +317,21 @@ namespace XMLIdentifier
                 else if (!array[i].Contains("="))
                     throw new Exception("Invalid element");
 
-                    for (int j = 0; j < array[i].Length; j++) //loop through the strings in array element
+                for (int j = 0; j < array[i].Length; j++) //loop through the strings in array element
+                {
+                    if (countQuote > 2 || ((j + 1) == array[i].Length) && countQuote == 0) //if quote more than 2, error out. no quote found, also error out
+                        throw new Exception("Invalid Element attribute");
+                    else if (array[i][j] == '=')
                     {
-                        if (countQuote > 2 || ((j + 1) == array[i].Length) && countQuote == 0) //if quote more than 2, error out. no quote found, also error out
-                            throw new Exception("Invalid Element attribute");
-                        else if (array[i][j] == '=')
-                        {
-                            attributeName = array[i].Substring(0, j);
-                            if ((attributeName == null || attributeName == "") ||
-                                (attributeName.Contains("<") || attributeName.Contains(">") || attributeName.Contains("&")) ||
-                                (!char.IsLetter(attributeName[0]) && attributeName[0] != '_'))
-                                throw new Exception("Invalid attribute name");
-                        }
-                        else if (array[i][j] == '\"')
-                            countQuote++;
+                        attributeName = array[i].Substring(0, j);
+                        if ((attributeName == null || attributeName == "") ||
+                            (attributeName.Contains("<") || attributeName.Contains(">") || attributeName.Contains("&")) ||
+                            (!char.IsLetter(attributeName[0]) && attributeName[0] != '_'))
+                            throw new Exception("Invalid attribute name");
                     }
+                    else if (array[i][j] == '\"')
+                        countQuote++;
+                }
             }
         }
 
