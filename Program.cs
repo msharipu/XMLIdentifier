@@ -39,6 +39,12 @@ namespace XMLIdentifier
             string test22 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"><html><body><h2>My CD Collection</h2><table border=\"1\"><tr><th style=\"text-align:left\">Title</th><th style=\"text-align:left\">Artist</th></tr><xsl:for-each select=\"catalog/cd\"><tr><td><xsl:value-of select=\"title\"/></td><td><xsl:value-of select=\"artist\"/></td></tr></xsl:for-each></table></body></html></xsl:template></xsl:stylesheet>";
             string test23 = "<?xml version=\"1.0\"?><xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><xs:element name=\"Book\"><xs:complexType><xs:sequence><xs:element name=\"Title\" type=\"xs:string\"/><xs:element name=\"Author\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"2\"/><xs:element name=\"Publication_Year\" type=\"xs:positiveInteger\"/><xs:element name=\"Category\" type=\"xs:string\"/><xs:element name=\"Language\" type=\"xs:string\" default=\"English\"/><xs:element name=\"Pages\" type=\"xs:postiveInteger\"/><xs:element name=\"Number_of_Chapters\" type=\"xs: postiveInteger \"/><xs:element name=\"Chap_1\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_2\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_3\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><!-- Similarly the number of chapters can be represented separately--><xs:element name=\"Reference\" type=\"xs:string\"/></xs:sequence></xs:complexType></xs:element></xs:schema>";
             string test24 = "<?xml version=\"1.0\"?><xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"><xs:element name=\"Book\"><xs:complexType><xs:sequence><xs:element name=\"Title\" type=\"xs:string\"/><xs:element name=\"Author\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"2\"/><xs:element name=\"Publication_Year\" type=\"xs:positiveInteger\"/><xs:element name=\"Category\" type=\"xs:string\"/><xs:element name=\"Language\" type=\"xs:string\" default=\"English\"/><xs:element name=\"Pages\" type=\"xs:postiveInteger\"/><xs:element name=\"Number_of_Chapters\" type=\"xs: postiveInteger \"/><xs:element name=\"Chap_1\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_2\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><xs:element name=\"Chap_3\" type=\"xs:string\" minOccurs=\"1\" maxOccurs=\"1\"/><!-- Similarly the number of chapters can be represented separately--><xs:element name=\"Reference\" type=\"xs:string\"/><xs:element name=\"Reference\" type=\"xs:string\"/><xs:element name=\"Reference\" type=\"xs:string\"/><xs:element name=\"Reference\" type=\"xs:string\"/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+            string test25 = "<Design><Code>hello world</Code></Design><test></test>";
+            string test26 = "<Design><Code attr=\"123\" attr>hello world</Code><XCode attr=>hello world</XCode><YCode attr=\"123\" _123=\"\">hello world</YCode></Design>";
+            string test27 = "<Design><XCode attr=>hello world</XCode><YCode attr=\"123\" _123=\"\">hello world</YCode></Design>";
+            string test28 = "<Design><YCode attr=\"123\" _123=\"\">hello world</YCode></Design>";
+            string test29 = "<Design><Code  >hello world</Code></Design>";
+
 
 
             //Console.WriteLine("Output: " + p.DetermineSxml(test1) + "\n"); //output True
@@ -64,7 +70,12 @@ namespace XMLIdentifier
             //Console.WriteLine("Output: " + p.DetermineSxml(test21) + "\n"); //output False, invalid closing element upfront
             //Console.WriteLine("Output: " + p.DetermineSxml(test22) + "\n"); //output True, 
             //Console.WriteLine("Output: " + p.DetermineSxml(test23) + "\n"); //output True, 
-            Console.WriteLine("Output: " + p.DetermineSxml(test24) + "\n"); //output True, 
+            //Console.WriteLine("Output: " + p.DetermineSxml(test24) + "\n"); //output True, 
+            //Console.WriteLine("Output: " + p.DetermineSxml(test25) + "\n"); //output False, more than 1 root tags 
+            Console.WriteLine("Output: " + p.DetermineSxml(test26) + "\n"); //output False, more than 1 root tags 
+            Console.WriteLine("Output: " + p.DetermineSxml(test27) + "\n"); //output False, more than 1 root tags 
+            Console.WriteLine("Output: " + p.DetermineSxml(test28) + "\n"); //output False, more than 1 root tags 
+            Console.WriteLine("Output: " + p.DetermineSxml(test29) + "\n"); //output False, more than 1 root tags 
             Console.ReadKey();
         }
 
@@ -72,15 +83,13 @@ namespace XMLIdentifier
         {
             try
             {
-
-
                 Console.WriteLine(TestCount++.ToString() + ")");
                 Console.WriteLine("Input: " + sxml);
 
-                if(sxml.StartsWith("<?"))
+                if (sxml.StartsWith("<?"))
                     sxml = sxml.Remove(0, sxml.IndexOf(">") + 1);
                 //recursiveElementValidation2(sxml);
-                recursiveElementValidation2(sxml,true);
+                recursiveElementValidation2(sxml, true);
 
                 return true;
             }
@@ -92,7 +101,7 @@ namespace XMLIdentifier
         }
 
         //private void recursiveElementValidation2(string bodyXml)
-        private void recursiveElementValidation2(string bodyXml,bool isRoot = false)
+        private void recursiveElementValidation2(string bodyXml, bool isRoot = false)
         {
             //Console.WriteLine(bodyXml);
 
@@ -158,7 +167,7 @@ namespace XMLIdentifier
                 if (bodyXml.StartsWith("<!--")) // if comment, find the closing and continue with next element available
                 {
                     string closingComment = "-->";
-                    string output = bodyXml.Remove(0, bodyXml.IndexOf(closingComment) + closingComment.Length );
+                    string output = bodyXml.Remove(0, bodyXml.IndexOf(closingComment) + closingComment.Length);
                     if (output.Length > 0)
                         recursiveElementValidation2(output);
 
@@ -178,6 +187,7 @@ namespace XMLIdentifier
                     //if (attributes.Count == 1)
                     //    throw new Exception("Invalid Xml input string, Element name cannot have spaces!");
                     elName = attributes[0];
+                    validateElementAttribute(attributes.ToArray()); // validate the element attribtue
                     elHasAttribute = true;
                 }
 
@@ -186,7 +196,7 @@ namespace XMLIdentifier
                 string closingSelfElName = "";
                 if (elHasAttribute && attributes.LastOrDefault().EndsWith("/"))
                 {
-                    closingSelfElName = String.Concat("<",String.Join(" ",attributes.ToArray()), ">");
+                    closingSelfElName = String.Concat("<", String.Join(" ", attributes.ToArray()), ">");
                 }
                 else
                     closingSelfElName = elName.EndsWith("/") ? $"<{elName}>" : $"<{elName}/>";
@@ -201,7 +211,7 @@ namespace XMLIdentifier
                         //Console.Write("element has attribute\t");
                     }
 
-                    int lastElementIndex = FindEndRootElement(elName, bodyXml,isRoot) - (startIndexElement - 1);
+                    int lastElementIndex = FindEndRootElement(elName, bodyXml, isRoot) - (startIndexElement - 1);
                     int startIndex = findElementClosingTag(bodyXml);
                     string body = bodyXml.Substring(startIndex + 1, lastElementIndex - attributeLength); //body might be Element value, or nested elements
                     if (body.Length > 0)
@@ -209,7 +219,7 @@ namespace XMLIdentifier
 
                     if (lastElementIndex < bodyXml.Length) // if value less, means there is still more content to parse 
                     {
-                        int lengthToRemove = ((lastElementIndex - attributeLength) + closingElName.Length + startIndex + 1) ;
+                        int lengthToRemove = ((lastElementIndex - attributeLength) + closingElName.Length + startIndex + 1);
                         string output = bodyXml.Remove(0, lengthToRemove);
                         if (output.Length > 0)
                             recursiveElementValidation2(output);
@@ -217,8 +227,8 @@ namespace XMLIdentifier
 
                 }
                 //cater the scenario where an element self close
-                
-                else if (bodyXml.Contains(closingSelfElName) || String.Concat(bodyXml.Where(c => !Char.IsWhiteSpace(c))).Contains(closingSelfElName)) 
+
+                else if (bodyXml.Contains(closingSelfElName) || String.Concat(bodyXml.Where(c => !Char.IsWhiteSpace(c))).Contains(closingSelfElName))
                 {
                     //Console.Write("Found closing self element name \t");
                     int lastElementIndex = findElementClosingTag(bodyXml) + 1;
@@ -229,12 +239,46 @@ namespace XMLIdentifier
                 }
                 else
                     throw new Exception($"Invalid xml! No closing tag found for {elName}");
-                
+
                 //Console.WriteLine("yahoo\t" + bodyXml);
             }
         }
 
+        /// <summary>
+        /// Check if attribute format is correct 
+        /// </summary>
+        /// <param name="array"></param>
+        private void validateElementAttribute(string[] array)
+        {
+            for (int i = 1; i < array.Length; i++) //loop through array element
+            {
+                string attributeName = "";
+                int countQuote = 0;
 
+                if (array[i] == null || array[i] == "")
+                    continue;
+                else if (attributeName != "" && attributeName.Equals(array[i], StringComparison.OrdinalIgnoreCase))
+                    throw new Exception("Attribute name duplicate detected");
+                else if (!array[i].Contains("="))
+                    throw new Exception("Invalid element");
+
+                    for (int j = 0; j < array[i].Length; j++) //loop through the strings in array element
+                    {
+                        if (countQuote > 2 || ((j + 1) == array[i].Length) && countQuote == 0) //if quote more than 2, error out. no quote found, also error out
+                            throw new Exception("Invalid Element attribute");
+                        else if (array[i][j] == '=')
+                        {
+                            attributeName = array[i].Substring(0, j);
+                            if ((attributeName == null || attributeName == "") ||
+                                (attributeName.Contains("<") || attributeName.Contains(">") || attributeName.Contains("&")) ||
+                                (!char.IsLetter(attributeName[0]) && attributeName[0] != '_'))
+                                throw new Exception("Invalid attribute name");
+                        }
+                        else if (array[i][j] == '\"')
+                            countQuote++;
+                    }
+            }
+        }
 
         /// <summary>
         /// Find first matching index of '>'
@@ -262,7 +306,7 @@ namespace XMLIdentifier
         /// <exception cref="Exception"></exception>
         private int FindEndRootElement(string rootElementName, string sxml, bool isRoot = false)
         {
-            string endRootElement = "</" + rootElementName+">";
+            string endRootElement = "</" + rootElementName + ">";
             int endRootIndex = 0;
 
             if (sxml.Contains(endRootElement))
@@ -276,10 +320,10 @@ namespace XMLIdentifier
 
             return 0;
             //Console.WriteLine(sxml.Substring(endRootIndex -1 ));
-            
+
         }
 
-        
+
         /// <summary>
         /// Returned the lenght of the element name
         /// Ex: <Name> return 'Name'
