@@ -51,6 +51,7 @@ namespace XMLIdentifier
             string test33 = "<Design><Code  >& &gt</Code></Design>";
             string test34 = "<Design><!-- This is an invalid -- comment --><Code  >& &gt</Code></Design>";
             string test35 = "<Design><!-- This is an invalid--comment --><Code  >& &gt</Code></Design>";
+            string test36 = "<Design>123&<Code  >& &gt</Code></Design>";
 
             //Console.WriteLine("Output: " + p.DetermineSxml(test1) + "\n"); //output True
             //Console.WriteLine("Output: " + p.DetermineSxml(test2) + "\n"); //output False, invalid root
@@ -67,7 +68,7 @@ namespace XMLIdentifier
             //Console.WriteLine("Output: " + p.DetermineSxml(test13) + "\n"); //output False, case sensitive element name failed
             //Console.WriteLine("Output: " + p.DetermineSxml(test14) + "\n"); //output True
             //Console.WriteLine("Output: " + p.DetermineSxml(test15) + "\n"); //output True
-            //Console.WriteLine("Output: " + p.DetermineSxml(test16) + "\n"); //output True
+            Console.WriteLine("Output: " + p.DetermineSxml(test16) + "\n"); //output True
             //Console.WriteLine("Output: " + p.DetermineSxml(test17) + "\n"); //output True
             //Console.WriteLine("Output: " + p.DetermineSxml(test18) + "\n"); //output True
             //Console.WriteLine("Output: " + p.DetermineSxml(test19) + "\n"); //output True
@@ -85,8 +86,9 @@ namespace XMLIdentifier
             //Console.WriteLine("Output: " + p.DetermineSxml(test31) + "\n"); //output False, Invalid character detected
             //Console.WriteLine("Output: " + p.DetermineSxml(test32) + "\n"); //output False, Invalid character detected
             //Console.WriteLine("Output: " + p.DetermineSxml(test33) + "\n"); //output False, Invalid character detected
-            Console.WriteLine("Output: " + p.DetermineSxml(test34) + "\n"); //output False, Invalid character detected
-            Console.WriteLine("Output: " + p.DetermineSxml(test35) + "\n"); //output False, Invalid character detected
+            //Console.WriteLine("Output: " + p.DetermineSxml(test34) + "\n"); //output False, Invalid character detected
+            //Console.WriteLine("Output: " + p.DetermineSxml(test35) + "\n"); //output False, Invalid character detected
+            //Console.WriteLine("Output: " + p.DetermineSxml(test36) + "\n"); //output False, Invalid character detected
             Console.ReadKey();
         }
 
@@ -187,6 +189,8 @@ namespace XMLIdentifier
 
                     return;
                 }
+                else if(bodyXml.IndexOf('<') > 0 && validateElementBodyValue(bodyXml)) // added extra validation if there is value in element body
+                    throw new Exception("Invalid character detected");
 
                 bool elHasAttribute = false;
                 List<string> attributes = new List<string>();
@@ -310,7 +314,7 @@ namespace XMLIdentifier
                 string attributeName = "";
                 int countQuote = 0;
 
-                if (array[i] == null || array[i] == "")
+                if (array[i] == null || array[i] == "" || (array[i].Length == 1 && array[i] == "/"))
                     continue;
                 else if (attributeName != "" && attributeName.Equals(array[i], StringComparison.OrdinalIgnoreCase))
                     throw new Exception("Attribute name duplicate detected");
