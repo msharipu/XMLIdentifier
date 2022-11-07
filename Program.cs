@@ -120,61 +120,6 @@ namespace XMLIdentifier
 
             if (bodyXml.Contains("<") && !bodyXml.Contains(">"))
                 throw new Exception("There is no closing element");
-            #region COMMENTED OUT 
-            //else if (bodyXml.StartsWith("<") && !bodyXml.Substring(1).Equals("//"))
-            //{
-            //    bool elHasAttribute = false;
-            //    List<string> attributes = new List<string>();
-            //    string elName = bodyXml.Substring(1, getLength(1, bodyXml));
-            //    if (elName.Contains(" "))
-            //    {
-            //        attributes.AddRange(elName.Split(' '));
-            //        //if (attributes.Count == 1)
-            //        //    throw new Exception("Invalid Xml input string, Element name cannot have spaces!");
-            //        elName = attributes[0];
-            //        elHasAttribute = true;
-            //    }
-
-            //    string closingElName = $"</{elName}>";
-            //    string closingSelfElName = elName.EndsWith("/") ? $"<{elName}>" : $"<{elName}/>";
-
-            //    if (bodyXml.Contains(closingElName)) //element name are case sensitive
-            //    {
-            //        int attributeLength = 0;
-            //        if (elHasAttribute)
-            //        {
-            //            for (int i = 1; i < attributes.Count; i++)
-            //                attributeLength = attributes[i].Length + 1; //+1 to include space 
-
-            //        }
-
-            //        int lastElementIndex = FindEndRootElement(elName, bodyXml);
-            //        int startIndex = findElementClosingTag(bodyXml);
-            //        string body = bodyXml.Substring(startIndex + 1, lastElementIndex - attributeLength); //body might be Element value, or nested elements
-            //        if(body.Length > 0)
-            //            recursiveElementValidation2(body); //if element value contains nested element, recursive will keep going until it does not find an element
-
-            //        if (lastElementIndex < bodyXml.Length) // if value less, means there is still more content to parse 
-            //        {
-            //            int lengthToRemove = (lastElementIndex - attributeLength) + closingElName.Length + startIndex + 1;
-            //            string output = bodyXml.Remove(0, lengthToRemove);
-            //            if (output.Length > 0)
-            //                recursiveElementValidation2(output);
-            //        }
-
-            //    }
-            //    else if (String.Concat(bodyXml.Where(c => !Char.IsWhiteSpace(c))).Contains(closingSelfElName)) //cater the scenario where an element self close
-            //    {
-            //        int lastElementIndex = findElementClosingTag(bodyXml) + 1;
-            //        int lengthToRemove = (lastElementIndex);
-            //        string output = bodyXml.Remove(0, lengthToRemove);
-            //        if (output.Length > 0)
-            //            recursiveElementValidation2(output);
-            //    }
-            //    else
-            //        throw new Exception($"Invalid xml! No closing tag found for {elName}");
-            //}
-            #endregion
             else if (bodyXml.Contains("<")) //possibly the body still has element but the start is the element value instead like test 8
             {
                 if (bodyXml.StartsWith("<!--")) // if comment, find the closing and continue with next element available
